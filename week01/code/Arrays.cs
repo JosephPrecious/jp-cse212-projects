@@ -13,7 +13,15 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        double[] multiples = new double[length]; // Create an array of doubles with the specified length
+        
+        for (int i = 0; i < length; i++) // Loop through each index of the array
+        
+        {
+            multiples[i] = number * (i + 1); // Calculate the multiple and assign it to the current index
+        }
+
+        return multiples; // replace this return statement with your own
     }
 
     /// <summary>
@@ -29,5 +37,15 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        int startIndex = data.Count - amount; // Calculate the starting index for rotation
+        
+        List<int> rotated = data.GetRange(startIndex, amount); // Create a new list to hold the
+        
+        rotated.AddRange(data.GetRange(0, startIndex)); // Add the remaining elements to the new list
+        
+        data.Clear(); // Clear the original list
+        
+        data.AddRange(rotated); // Add the rotated elements back to the original list
     }
 }
