@@ -5,3 +5,5 @@ This is the starting repository for student work for CSE 212 at BYU-Idaho. It sh
 This code is used for class assignments for CSE 212 at Brigham Young University-Idaho. Copying this code is a violation of the BYU-Idaho Honor Code.
 
 To ensure that you are learning the concepts of the course, any code that you add to this starter template should be your own work. If you have any questions about this, ask your teacher.
+
+https://www.loom.com/share/a0389ea3273a4d81a0f2527993040b16
