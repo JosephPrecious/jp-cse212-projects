@@ -11,7 +11,11 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3) and
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: FAILED on the first assertion (Expected: Bob, Actual: Sue). The queue returns
+    // people in last-in, first-out order instead of first-in, first-out. In PersonQueue.cs, Enqueue()
+    // uses _queue.Insert(0, person), which puts a new person at the front, while Dequeue() removes
+    // from index 0 (also the front). So the queue behaves like a stack.
+    // Fix: in PersonQueue.Enqueue, add the person to the back with _queue.Add(person).
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -43,7 +47,10 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (5), Sue (3)
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
-    // Defect(s) Found: 
+    // Defect(s) Found: FAILED on the first assertion (Expected: Bob, Actual: Sue). Same defect as the
+    // first test: PersonQueue.Enqueue() inserts at index 0 (the front) and Dequeue() removes from index 0,
+    // so people come out in last-in, first-out order instead of first-in, first-out.
+    // Fix: in PersonQueue.Enqueue, use _queue.Add(person) so people are added to the back of the queue.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -85,7 +92,13 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: FAILED on the first assertion (Expected: Bob, Actual: Sue) because of the
+    // last-in, first-out defect in PersonQueue.Enqueue() (Insert(0, person) should be Add(person)).
+    // A second defect appears once that is fixed: in TakingTurnsQueue.GetNextPerson(), a person is only
+    // added back when person.Turns > 1, so a person with infinite turns (0 or less) is never added back
+    // and Tim disappears after his first turn.
+    // Fix: if person.Turns <= 0, enqueue the person again without changing their Turns; otherwise, if
+    // person.Turns > 1, decrement Turns and enqueue them again.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -116,7 +129,13 @@ public class TakingTurnsQueueTests
     // Scenario: Create a queue with the following people and turns: Tim (Forever), Sue (3)
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: FAILED on the first assertion (Expected: Tim, Actual: Sue) because of the
+    // last-in, first-out defect in PersonQueue.Enqueue() (Insert(0, person) should be Add(person)).
+    // A second defect appears once that is fixed: in TakingTurnsQueue.GetNextPerson(), a person with
+    // negative (infinite) turns fails the person.Turns > 1 check, so Tim is never added back to the queue
+    // after his first turn and the queue runs out of people early.
+    // Fix: if person.Turns <= 0, enqueue the person again without changing their Turns (so Tim's Turns
+    // stays at -3); otherwise, if person.Turns > 1, decrement Turns and enqueue them again.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -143,7 +162,8 @@ public class TakingTurnsQueueTests
     [TestMethod]
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
-    // Defect(s) Found: 
+    // Defect(s) Found: PASSED. No defect found. GetNextPerson() checks IsEmpty() and throws an
+    // InvalidOperationException with the message "No one in the queue." as required.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
